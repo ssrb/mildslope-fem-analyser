@@ -1,0 +1,16 @@
+language: c
+dist: trusty
+sudo: required
+before_install:
+- ./install-icc.sh
+script:
+- source ~/.bashrc
+- icc -o test/test test/test.c
+- make -C src
+notifications:
+  email:
+    on_success: change
+    on_failure: change
+env:
+  global:
+    secure: q3VEVZBxC3V8lSyuKaT78s0wSBS2up/pmIcDbOIQHM8nrlowpfJDODzMwFtbSu9KE6KaYzDFaWFi4Vt8s879+eWvAaa9jBViMcV1F8E0tNtlJIRBqLTbWU3Q6Wylf+2xNQ5hE8nT7B9YuFH/Ug3Wp9h3h9lkvYUzBepsgyxQQG3aJvnrOlntH2Wt2lnDxVRh0rslUiN+SXaq3RX0TaHDuCwOkQyRmeZWJ3YC4huTK+gowHQ1RvhV3XvNnvkow5v6QjZUoG9t45yK5zSug/SrrhnHxnp1eMES9/OvnI+38u9tkpICwPetGNSOWbAK7hIibZ+Q9kJ2D42Fpgw6N7MXrxw3B935XhG8+Jm0lEh7QJwd1iPfI/HDBug3w9g1gouV5d1jt2EWWoMTWeBiQyYe7LmjYEYclKfTEPVLuqi5Btm2jH57cP20z9zjJUpT/YnGFn35RuACr7koUVEkvtuPAfLEdLCf7DuLjRJfpFCfK8GaBpWQqYVO0HHkXYZJx90/4prop69+HzxStvLSAYyng81VaeBzf6CW3kOmPks4MNSOwMQ84vo+jCepQeTU36D9JCaK2XMifE7EEh0UzemxPFrrXOPkKVaKTCL08dTk9FJr9viXeYUY8KHLafVDGFneBdiRyEOv/FaSt3MhXkUxzSFUoYsJU+tBaPdK451V/60=
