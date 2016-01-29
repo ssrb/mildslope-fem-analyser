@@ -6,6 +6,7 @@ before_install:
 script:
 - source ~/.bashrc
 - icc -o test/test test/test.c
+- source /opt/intel/mkl/bin/mklvars.sh
 - make -C src
 notifications:
   email:
