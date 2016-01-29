@@ -34,7 +34,7 @@ REDIR_0 := > /dev/null
 REDIR_1 :=
 REDIR = $(REDIR_$(V))
 
-CXX := /opt/intel/bin/icpc
+CXX := icpc
 CXXFLAGS := -O3 -I/usr/lib/openmpi/include \
 	-I/usr/lib/openmpi/include/openmpi \
 	-I/usr/local/cuda/include \
