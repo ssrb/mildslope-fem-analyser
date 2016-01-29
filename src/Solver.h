@@ -36,7 +36,7 @@
 #include <mpi.h>
 
 // Pardiso + vectorized math
-#include "mkl.h"
+#include <mkl.h>
 
 // cuSPARSE
 #include <cuda_runtime.h>

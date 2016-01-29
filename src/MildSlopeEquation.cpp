@@ -31,7 +31,7 @@
 #include "LinearSystem.h"
 #include "GpuAssembly.h"
 
-#include "mkl.h"
+#include <mkl.h>
 
 #include <cassert>
 

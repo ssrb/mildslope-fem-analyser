@@ -31,7 +31,7 @@
 #include "LUPtr.h"
 
 // Pardiso + vectorized math
-#include "mkl.h"
+#include <mkl.h>
 
 // STL-libstdc++
 #include <vector>
