@@ -35,9 +35,6 @@
 // MPI
 #include <mpi.h>
 
-// Pardiso + vectorized math
-#include <mkl.h>
-
 // cuSPARSE
 #include <cuda_runtime.h>
 #include <thrust/host_vector.h>
@@ -68,13 +65,15 @@ namespace BabyHares {
 
 	struct SolverContext;
 
-	template<typename K>
+	template<typename T>
 	class Solver {
 		public:
+			typedef T K;
+
 			// Solve _localy_
 			void solve(const LinearSystem<K> &ls, const Mesh &mesh, K *x) const;
 			void consolidateLocalSolutions(const Mesh &mesh, const K *localSol, int rank) const;
-			typedef K K;
+			
 		private:
 
 			struct SolverContext {
@@ -118,9 +117,6 @@ namespace BabyHares {
 
 			void solveLocalInterior(const SolverContext &ctx, K *x) const;
 	};
-}
-
-namespace BabyHares {
 
 	template<typename K>
 	void Solver<K>::solve(const LinearSystem<K> &ls, const Mesh &mesh, K *x) const {
@@ -285,7 +281,7 @@ namespace BabyHares {
  			}
 
 			FILE *fd = fopen("lyttelton_osm_small.sol", "w");
-			fprintf(fd, "MeshVersionFormatted 1\n\nDimension 2\n\nSolAtVertices\n%d\n1 1\n\n", solution.size() - 1);
+			fprintf(fd, "MeshVersionFormatted 1\n\nDimension 2\n\nSolAtVertices\n%zu\n1 1\n\n", solution.size() - 1);
 			for (int i = 1; i < solution.size(); ++i) {
 				fprintf(fd, "%0.12f\n", solution[i].real());
 			}

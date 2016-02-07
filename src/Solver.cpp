@@ -26,6 +26,13 @@
 // either expressed or implied, of the FreeBSD Project.
 #include "Solver.h"
 
+// vectorized math
+#ifdef __INTEL_COMPILER
+#include <mkl.h>
+#else
+#include <cblas.h>
+#endif
+
 namespace BabyHares {
 
 	template<>

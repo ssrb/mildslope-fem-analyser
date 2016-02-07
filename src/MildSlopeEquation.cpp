@@ -31,8 +31,6 @@
 #include "LinearSystem.h"
 #include "GpuAssembly.h"
 
-#include <mkl.h>
-
 #include <cassert>
 
 #include <vector>
@@ -87,14 +85,12 @@ void  MildSlopeEquation::countNZCoefficents() {
 	_nbNonNullCoefficentsAGG = 0;
 
 	std::vector<int> color(_mesh->_vertices.size(), -1);
-	for (int row = 0; row < _mesh->_vertices.size(); ++row) {
-		const Vertex &vi(_mesh->_vertices[row]);
+	for (int row = 0; row < (int)_mesh->_vertices.size(); ++row) {
 		// Inspect each triangle connected to vertex row
 		for (RCTI ti = _rct.find(row); ti != _rct.end(); ++ti) {
 			const Triangle &triangle(_mesh->_triangles[*ti]);
 			for (int sj = 0; sj < 3; ++sj) {
-				int column = triangle.v[sj];
-				const Vertex &vj(_mesh->_vertices[column]);
+				int column = triangle.v[sj];			
 				// Do not count coefficient twice
 				if (color[column] != row) {
 					color[column] = row;
@@ -131,7 +127,7 @@ void MildSlopeEquation::walkDomainBoundary(
 	K (*v)[3][3], 
 	K *load
 ) const {
-	for (int ei = 0; ei < _mesh->_boundary.size(); ++ei) {
+	for (int ei = 0; ei < (int)_mesh->_boundary.size(); ++ei) {
 		const Edge &edge(_mesh->_boundary[ei]);
 		switch (edge.boundaryId) {
 			case kOpenBoundaryId:
@@ -168,21 +164,21 @@ void MildSlopeEquation::addOpenBoundaryEdge(
 
 	K prefactor(0, -1.0 / (k0 * k0));
 
-	v[triangleIndex][si][sj] += prefactor * n0 * (p * len / 6 + 1 / (2 * p * len));
-	v[triangleIndex][sj][si] += prefactor * n0 * (p * len / 6 + 1 / (2 * p * len));
-	v[triangleIndex][si][si] += prefactor * n0 * (p * len / 3 - 1 / (2 * p * len));
-	v[triangleIndex][sj][sj] += prefactor * n0 * (p * len / 3 - 1 / (2 * p * len));
+	v[triangleIndex][si][sj] += prefactor * n0 * (p * len / 6. + 1. / (2. * p * len));
+	v[triangleIndex][sj][si] += prefactor * n0 * (p * len / 6. + 1. / (2. * p * len));
+	v[triangleIndex][si][si] += prefactor * n0 * (p * len / 3. - 1. / (2. * p * len));
+	v[triangleIndex][sj][sj] += prefactor * n0 * (p * len / 3. - 1. / (2. * p * len));
 
 	K wavei = wave.elevationAt(vi.x, vi.y);
 	K wavej = wave.elevationAt(vj.x, vj.y);
 	
-	load[edge.v[0]] += -prefactor * n0 * (wavej - wavei) / (2 * p * len);
-	load[edge.v[1]] += -prefactor * n0 * (wavei - wavej) / (2 * p * len);
+	load[edge.v[0]] += -prefactor * n0 * (wavej - wavei) / (2. * p * len);
+	load[edge.v[1]] += -prefactor * n0 * (wavei - wavej) / (2. * p * len);
 
-	float xwavedirection = (dy * cos(wave.direction) - dx * sin(wave.direction)) / len;
+	double xwavedirection = (dy * cos(wave.direction) - dx * sin(wave.direction)) / len;
 
-	load[edge.v[0]] += -prefactor * n0 * p * (xwavedirection - 1) * (len / 6) * (2 * wavei + wavej);
-	load[edge.v[1]] += -prefactor * n0 * p * (xwavedirection - 1) * (len / 6) * (wavei + 2 * wavej);
+	load[edge.v[0]] += -prefactor * n0 * p * (xwavedirection - 1) * (len / 6.) * (2. * wavei + wavej);
+	load[edge.v[1]] += -prefactor * n0 * p * (xwavedirection - 1) * (len / 6.) * (wavei + 2. * wavej);
 	
 }
 
@@ -210,10 +206,10 @@ void MildSlopeEquation::addClosedBoundaryEdge(
 
 	K prefactor(0, -(1.0 - R) / (k0 * k0 * (1.0 + R)));
 
-	v[triangleIndex][si][sj] += prefactor * n0 * (p * len / 6 + 1 / (2 * p * len));
-	v[triangleIndex][sj][si] += prefactor * n0 * (p * len / 6 + 1 / (2 * p * len));
-	v[triangleIndex][si][si] += prefactor * n0 * (p * len / 3 - 1 / (2 * p * len));
-	v[triangleIndex][sj][sj] += prefactor * n0 * (p * len / 3 - 1 / (2 * p * len));
+	v[triangleIndex][si][sj] += prefactor * n0 * (p * len / 6. + 1. / (2. * p * len));
+	v[triangleIndex][sj][si] += prefactor * n0 * (p * len / 6. + 1. / (2. * p * len));
+	v[triangleIndex][si][si] += prefactor * n0 * (p * len / 3. - 1. / (2. * p * len));
+	v[triangleIndex][sj][sj] += prefactor * n0 * (p * len / 3. - 1. / (2. * p * len));
 }
 
 int MildSlopeEquation::getEdgeTriangleId(const Edge &edge) const {
@@ -253,8 +249,7 @@ MildSlopeSystemConstPtr  MildSlopeEquation::computeCoefficents(const Wave &wave,
 	K (*vv)[3][3] = (K (*)[3][3])(&v[0]);
 	walkDomainBoundary(wave, R, &(n0s[0]), &(ps[0]), vv, &(ls->loadVector[0]));
 
-	for (int row = 0; row < _mesh->_vertices.size(); ++row) {
-		const Vertex &vi(_mesh->_vertices[row]);
+	for (int row = 0; row < (int)_mesh->_vertices.size(); ++row) {
 		for (RCTI ti = _rct.find(row); ti != _rct.end(); ++ti) {
 
 			int triangleIndex = *ti;
@@ -266,7 +261,6 @@ MildSlopeSystemConstPtr  MildSlopeEquation::computeCoefficents(const Wave &wave,
 
 			for (int sj = 0; sj < 3; ++sj) {
 				int column = triangle.v[sj];
-				const Vertex &vj(_mesh->_vertices[column]);
 				
 				// But insert once
 				if (color[column] != row) {

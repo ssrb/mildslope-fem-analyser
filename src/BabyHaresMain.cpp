@@ -47,26 +47,26 @@ namespace {
 	    printf("Major revision number:         %d\n",  devProp.major);
 	    printf("Minor revision number:         %d\n",  devProp.minor);
 	    printf("Name:                          %s\n",  devProp.name);
-	    printf("Total global memory:           %u\n",  devProp.totalGlobalMem);
-	    printf("Total shared memory per block: %u\n",  devProp.sharedMemPerBlock);
+	    printf("Total global memory:           %zu\n",  devProp.totalGlobalMem);
+	    printf("Total shared memory per block: %zu\n",  devProp.sharedMemPerBlock);
 	    printf("Total registers per block:     %d\n",  devProp.regsPerBlock);
 	    printf("Warp size:                     %d\n",  devProp.warpSize);
-	    printf("Maximum memory pitch:          %u\n",  devProp.memPitch);
+	    printf("Maximum memory pitch:          %zu\n",  devProp.memPitch);
 	    printf("Maximum threads per block:     %d\n",  devProp.maxThreadsPerBlock);
 	    for (int i = 0; i < 3; ++i)
 	    printf("Maximum dimension %d of block:  %d\n", i, devProp.maxThreadsDim[i]);
 	    for (int i = 0; i < 3; ++i)
 	    printf("Maximum dimension %d of grid:   %d\n", i, devProp.maxGridSize[i]);
 	    printf("Clock rate:                    %d\n",  devProp.clockRate);
-	    printf("Total constant memory:         %u\n",  devProp.totalConstMem);
-	    printf("Texture alignment:             %u\n",  devProp.textureAlignment);
+	    printf("Total constant memory:         %zu\n",  devProp.totalConstMem);
+	    printf("Texture alignment:             %zu\n",  devProp.textureAlignment);
 	    printf("Concurrent copy and execution: %s\n",  (devProp.deviceOverlap ? "Yes" : "No"));
 	    printf("Number of multiprocessors:     %d\n",  devProp.multiProcessorCount);
 	    printf("Kernel execution timeout:      %s\n",  (devProp.kernelExecTimeoutEnabled ? "Yes" : "No"));
 	    return;
 	}
 	 
-	int printAllDevProp()
+	void printAllDevProp()
 	{
 	    // Number of CUDA devices
 	    int devCount;
@@ -88,14 +88,14 @@ namespace {
 		cudaMemGetInfo(&freeGpuMem, &totalGpuMem);
 
 		cudaDeviceGetLimit(&gpuMemlimit, cudaLimitMallocHeapSize);
-		printf("Free GPU mem: %d, Total GPU mem: %d, Mem limit: %d\n", freeGpuMem, totalGpuMem, gpuMemlimit);
+		printf("Free GPU mem: %zu, Total GPU mem: %zu, Mem limit: %zu\n", freeGpuMem, totalGpuMem, gpuMemlimit);
 	}
 }
 
 int main(int ac, char **av) {
 
 	TiXmlDocument conf( av[1] );
-    bool loadOkay = conf.LoadFile();
+    conf.LoadFile();
     TiXmlElement* rootElement = conf.FirstChildElement( "babyhares" );
     
     TiXmlElement* harbourElement = rootElement->FirstChildElement( "harbour" );
@@ -107,9 +107,9 @@ int main(int ac, char **av) {
 
 	printAllDevProp();
 
-	int mpiRank, mpiSize, mpiInfo;
-	mpiInfo = MPI_Comm_rank(MPI_COMM_WORLD, &mpiRank);
-	mpiInfo = MPI_Comm_size(MPI_COMM_WORLD, &mpiSize);
+	int mpiRank, mpiSize;
+	MPI_Comm_rank(MPI_COMM_WORLD, &mpiRank);
+	MPI_Comm_size(MPI_COMM_WORLD, &mpiSize);
 
 	using namespace BabyHares;
 

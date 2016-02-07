@@ -111,7 +111,7 @@ namespace BabyHares {
 				}
 			}
 
-			printf("%u triangles\n", mesh->_triangles.size());\
+			printf("%zu triangles\n", mesh->_triangles.size());\
 			//mesh->_triangles.shrink_to_fit();
 			return true;
 		}
@@ -128,13 +128,13 @@ namespace BabyHares {
 				mesh->_localToGlobal[localId] = *vidIter;
 			}
 			mesh->_localToGlobal.insert(mesh->_localToGlobal.end(), interfaceList.begin(), interfaceList.end());
-			for (int i = 0; i < mesh->_localToGlobal.size(); ++i) {
+			for (int i = 0; i < (int)mesh->_localToGlobal.size(); ++i) {
 				mesh->_globalToLocal.insert(std::make_pair(mesh->_localToGlobal[i], i));
 			}
 		}
 
 		void RenumberTriangleVertexIndices(const MeshPtr &mesh) {
-			for (int ti = 0; ti < mesh->_triangles.size(); ++ti) {
+			for (int ti = 0; ti < (int)mesh->_triangles.size(); ++ti) {
 				Triangle &triangle(mesh->_triangles[ti]);
 				for (int vi = 0; vi < 3; ++vi) {
 					triangle.v[vi] = mesh->_globalToLocal[triangle.v[vi]];
@@ -155,10 +155,10 @@ namespace BabyHares {
 
 			meshStream >> mesh->_nbTotalVertices;
 			std::getline(meshStream, dummy);
-			assert(sortedGobalIds.size() <= mesh->_nbTotalVertices);
+			assert((int)sortedGobalIds.size() <= mesh->_nbTotalVertices);
 
 			mesh->_vertices.resize(sortedGobalIds.size());
-			for (int vi = 0, currentLine = 1; vi < sortedGobalIds.size(); ++vi, ++currentLine) {
+			for (int vi = 0, currentLine = 1; vi < (int)sortedGobalIds.size(); ++vi, ++currentLine) {
 				int globalId = sortedGobalIds[vi];
 				SkipLines(meshStream, globalId - currentLine);
 				currentLine = globalId;

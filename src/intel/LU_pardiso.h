@@ -24,20 +24,34 @@
 // The views and conclusions contained in the software and documentation are those
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
-#include "LU.h"
+#pragma once
+
+// BabyHares
+#include "SparseMatrix.h"
+#include "LUPtr.h"
+
+// Pardiso + vectorized math
+#include <mkl.h>
+
+// STL-libstdc++
+#include <vector>
+#include <complex>
 
 namespace BabyHares {
-	LUConstPtr LU::Factorize(const SparseMatrix<std::complex<double> > &mat) {
-		LUPtr lu(new LU);
-		return lu;
-	}
+	class LU {
+		public:
+			static LUConstPtr Factorize(const SparseMatrix<std::complex<double> > &mat);
+			void solve(const std::vector<std::complex<double> > &b, std::complex<double> *x) const;
+			void solve(std::complex<double> *bx) const;
+			virtual ~LU();
+		private:
+			LU() {};
+			void *_pardisoHandle[64];
+			MKL_INT _mtype;
+			mutable MKL_INT _iparm[64];
+			MKL_INT _n;
 
-	LU::~LU() {		
-	}
-
-	void LU::solve(std::complex<double> *bx) const {		
-	}
-
-	void LU::solve(const std::vector<std::complex<double> > &b, std::complex<double> *x) const {		
-	}
+			const std::complex<double> *_val;
+			const int *_rowPtr, *_col;
+	};
 }

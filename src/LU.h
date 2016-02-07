@@ -30,9 +30,6 @@
 #include "SparseMatrix.h"
 #include "LUPtr.h"
 
-// Pardiso + vectorized math
-#include <mkl.h>
-
 // STL-libstdc++
 #include <vector>
 #include <complex>
@@ -46,11 +43,7 @@ namespace BabyHares {
 			virtual ~LU();
 		private:
 			LU() {};
-			void *_pardisoHandle[64];
-			MKL_INT _mtype;
-			mutable MKL_INT _iparm[64];
-			MKL_INT _n;
-
+			
 			const std::complex<double> *_val;
 			const int *_rowPtr, *_col;
 	};

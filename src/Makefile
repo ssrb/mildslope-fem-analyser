@@ -34,24 +34,27 @@ REDIR_0 := > /dev/null
 REDIR_1 :=
 REDIR = $(REDIR_$(V))
 
-CXX := icpc
-CXXFLAGS := -O3 -I/usr/lib/openmpi/include \
-	-I/usr/lib/openmpi/include/openmpi \
-	-I/usr/local/cuda/include \
-	-mkl=parallel
-# -llmpe -lmpe
-LDFLAGS :=  -pthread -openmp -mkl=parallel \
-	-L/usr/lib/openmpi/lib -lmpi -lopen-rte -lopen-pal\
+CXX := g++
+CXXFLAGS := -Wall -Wextra -m64 -O3 $(shell mpic++ --showme:compile) \
+	-I/usr/local/cuda/include
+# -mkl=parallel
+
+LDFLAGS :=  $(shell mpic++ --showme:link) -lblas \
 	-L/usr/local/cuda/lib64 \
 	-L/usr/local/cuda/lib \
 	-ldl -lnsl -lutil \
 	-lcudart \
 	-lcusparse 
 
-NVCC := /usr/local/cuda/bin/nvcc
-NVCCFLAGS := -O3 -arch=sm_20 -Xcompiler -Wall -Xcompiler -Wextra -m64
+# -pthread -openmp -mkl=parallel \
+# -llmpe -lmpe
+# -lopen-rte -lopen-pal 
 
-CPPSRC=$(shell find . -name "*.cpp")
+NVCC := /usr/local/cuda/bin/nvcc
+NVCCFLAGS := -O3 -arch=sm_20 -Xcompiler -m64 -Xcompiler -Wall -Xcompiler -Wextra
+
+
+CPPSRC= $(wildcard *.cpp) $(shell find tinyxml -name "*.cpp")
 CUDASRC=$(shell find . -name "*.cu")
 
 OUT=obj

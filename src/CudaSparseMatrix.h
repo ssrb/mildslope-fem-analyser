@@ -37,10 +37,10 @@
 
 namespace BabyHares {
 	// CSR format, index base 0
-	template<typename K>
+	template<typename T>
 	struct CudaSparseMatrix {
 
-		typedef K K;
+		typedef T K;
 
 		CudaSparseMatrix(const SparseMatrix<K> &matHost) :
 			nrow(matHost.nrow),
@@ -81,23 +81,4 @@ namespace BabyHares {
 		thrust::device_vector<int> col;
 		K *val;
 	};
-
-	template<>
-	void CudaSparseMatrix<std::complex<double> >::mv(cusparseHandle_t cusparseHandle, cusparseOperation_t trans, const K &alpha, const K *xdevice, const K &beta, K *ydevice) const {
-			cusparseStatus_t status = cusparseZcsrmv(	cusparseHandle, 
-														trans, 
-														nrow,
-														ncol,
-														nval,
-														(cuDoubleComplex *)&alpha, 
-														descr,
-														(cuDoubleComplex *)val,
-														thrust::raw_pointer_cast(rowPtr.data()), 
-														thrust::raw_pointer_cast(col.data()),
-														(cuDoubleComplex *)xdevice, 
-														(cuDoubleComplex *)&beta, 
-														(cuDoubleComplex *)ydevice);
-	}
-
-
 }

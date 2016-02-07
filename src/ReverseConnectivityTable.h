@@ -36,7 +36,7 @@ namespace BabyHares {
 			void init(const Mesh &mesh) {
 				_head.resize(mesh._vertices.size(), -1);
 				_next.resize(3 * mesh._triangles.size());
-				for (int ti = 0, p = 0; ti < mesh._triangles.size(); ++ti) {
+				for (size_t ti = 0, p = 0; ti < mesh._triangles.size(); ++ti) {
 					for (int si = 0; si < 3; ++si, ++p) {
 						int vi = mesh._triangles[ti].v[si];
 						_next[p] = _head[vi];

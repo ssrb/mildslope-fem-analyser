@@ -1,17 +1,7 @@
 language: c
-dist: trusty
-sudo: required
-before_install:
-- ./install-icc.sh
 script:
-- source ~/.bashrc
-- icc -o test/test test/test.c
-- source $(find . -name mklvars.sh)
 - make -C src
 notifications:
   email:
     on_success: change
     on_failure: change
-env:
-  global:
-    secure: pzR+XLFBvx0MSBAZW7RUJGYfDKSujfw05Ji6432lK9Bgcg+Vr6yy5w4LhPAMwWx0kO+KirUKJgrfvqmbqZjWAV/AnX/JJJqqkqA2XReLskE+dNj/GfKJRfwpbbFfH/yIMX00fdpAcI/nlT2hsEEQBJvVlB0A3i2J/bzQbbQhEaVhRvn4EDJjMfIl5GnwqqbX1G1KiCCGSP2aTZdzdfPQuP0x6wP8f94FKsId9hCgDeYQn7LOZWZELPG/NSQryY1tbYkRsSjTT804Rot2pDnJKAL7phjJKpR8giL+tI+zFlCv1dtU9akvhe1aaQWm/oAQh3Q8G5nN0kn3trR1CnCR1xUwF1ppzWG4GpD5a6BCyufoEthAYX+euoKu4Q2GM5U/xmycv6/rdWMQB8oBOR7umQPwl62LvPsjyQVDHBopICa5L+zUH8v73V9uZbHvRO1qiKldXfYzp4i1QRlam4dHCud/s3H4YqY3ImMdSjhqyMpwoHx4LHhJWjesys/cXVR0JZAwjNTAyo40TG51dhAnYef0i7tAQzcv0OtIWRi1AzQCPT48qhGBu5ZhNraPKOYDlq4xjLh9BtHGi9OE895aFAxFV7sQ9TXFyNPIRDBlTjo1dBadvDIr0jPH6+tvTqHJdRbwcAS3AJ80AgR6PxG9+Q8k0yFHgQUQvGDn7n0Fdx4=

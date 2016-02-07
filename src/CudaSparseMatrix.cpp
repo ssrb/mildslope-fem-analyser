@@ -24,20 +24,23 @@
 // The views and conclusions contained in the software and documentation are those
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
-#include "LU.h"
+#include "CudaSparseMatrix.h"
 
 namespace BabyHares {
-	LUConstPtr LU::Factorize(const SparseMatrix<std::complex<double> > &mat) {
-		LUPtr lu(new LU);
-		return lu;
-	}
-
-	LU::~LU() {		
-	}
-
-	void LU::solve(std::complex<double> *bx) const {		
-	}
-
-	void LU::solve(const std::vector<std::complex<double> > &b, std::complex<double> *x) const {		
+	template<>
+	void CudaSparseMatrix<std::complex<double> >::mv(cusparseHandle_t cusparseHandle, cusparseOperation_t trans, const K &alpha, const K *xdevice, const K &beta, K *ydevice) const {
+			cusparseZcsrmv(	cusparseHandle, 
+							trans, 
+							nrow,
+							ncol,
+							nval,
+							(cuDoubleComplex *)&alpha, 
+							descr,
+							(cuDoubleComplex *)val,
+							thrust::raw_pointer_cast(rowPtr.data()), 
+							thrust::raw_pointer_cast(col.data()),
+							(cuDoubleComplex *)xdevice, 
+							(cuDoubleComplex *)&beta, 
+							(cuDoubleComplex *)ydevice);
 	}
 }
