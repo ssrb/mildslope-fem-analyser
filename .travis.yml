@@ -1,7 +1,6 @@
 language: c
+before_install:
+	- sudo apt-get -qq update
+	- sudo apt-get install -y openmpi-bin libopenmpi-dev libblas-dev
 script:
-- make -C src
-notifications:
-  email:
-    on_success: change
-    on_failure: change
+	- make -C src
