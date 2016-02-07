@@ -1,6 +1,6 @@
 language: c
 before_install:
 - sudo apt-get -qq update
-- sudo apt-get install -y openmpi-bin libopenmpi-dev libblas-dev
+- sudo apt-get install -y openmpi-bin libopenmpi-dev libblas-dev cuda-7-5 cuda-cublas-dev-7-5 cuda-cusparse-dev-7-5
 script:
 - make -C src
