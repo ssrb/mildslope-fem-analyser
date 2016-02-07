@@ -34,7 +34,7 @@
 
 // MPI
 #include <mpi.h>
-#include <mpe.h>
+//#include <mpe.h>
 
 // STL - libstdc++
 #include <cstdlib>
