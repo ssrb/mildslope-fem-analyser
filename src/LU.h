@@ -43,7 +43,12 @@ namespace BabyHares {
 			virtual ~LU();
 		private:
 			LU() {};
-			
+			void *_pardisoHandle[64];
+			int _mtype;
+			mutable int _iparm[64];
+			mutable double _dparm[64];
+			int _n;
+
 			const std::complex<double> *_val;
 			const int *_rowPtr, *_col;
 	};

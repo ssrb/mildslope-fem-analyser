@@ -26,18 +26,238 @@
 // either expressed or implied, of the FreeBSD Project.
 #include "LU.h"
 
+// Pardiso + vectorized math
+extern "C" {
+
+	void pardisoinit(void*, int*, int*, int*, double*, int*);
+
+	void pardiso(void*, int*, int*, int*, int*, int*, double*, int*, int*, int*, int*, int*, int*, double*, double*, int*, double*);
+
+	void pardiso_chkmatrix(int*, int*, double*, int*, int*, int*);
+
+	void pardiso_chkvec(int*, int*, double*, int*);
+
+	void pardiso_printstats (int*, int*, double*, int*, int*, int*, double*, int*);
+}
+
+// /* Check license of the solver and initialize the solver */
+// pardisoinit(pt, &mtype, &solver, iparm, dparm, &error);
+//  Solve matrix sytem 
+// pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n, a, ia, ja,
+// perm, &nrhs, iparm, &msglvl, b, x, &error, dparm)
+
+// typedef struct {double re; double im;} doublecomplex;
+// void pardiso_chkmatrix (int *mtype, int *n, double *a,
+// int *ia, int *ja, int *error);
+// void pardiso_chkmatrix_z (int *mtype, int *n, doublecomplex *a,
+// int *ia, int *ja, int *error);
+// void pardiso_chkvec (int *n, int *nrhs, double *b, int *error);
+// void pardiso_chkvec_z (int *n, int *nrhs, doublecomplex *b, int *error);
+// void pardiso_printstats (int *mtype, int *n, double *a, int *ia,
+// int *ja, int *nrhs, double *b, int *error);
+// void pardiso_printstats_z (int *mtype, int *n, doublecomplex *a, int *ia,
+// int *ja, int *nrhs, doublecomplex *b, int *error);
+
 namespace BabyHares {
 	LUConstPtr LU::Factorize(const SparseMatrix<std::complex<double> > &mat) {
+
+		int error = 0;
+
 		LUPtr lu(new LU);
+
+		lu->_mtype = 6; // complex and symmetric
+
+		int solver = 0; // use sparse direct solver
+
+		pardisoinit(lu->_pardisoHandle, &lu->_mtype, &solver, lu->_iparm, lu->_dparm, &error);
+
+		//pardisoLU.iparm[26] = 1; // Check input
+		lu->_iparm[28] = 0; // Pardiso double precision
+
+		// Intel doc : Maximum number of factors with identical nonzero sparsity structure 
+		// that must be keep at the same time in memory. 
+		// In most applications this value is equal to 1.
+		int maxfct = 1;
+
+		// Intel doc: Indicates the actual matrix for the solution phase. 
+		// With this scalar you can define which matrix to factorize.
+		// In most applications this value is 1.
+		int mnum = 1;
+
+		int phase = 12; // Analysis, numerical factorization
+
+		lu->_n = mat.nrow;
+		
+		// Intel doc: Holds the permutation vector of size n. 
+		// You can use it to apply your own fill-in reducing ordering to the solver. 
+		// The permutation vector perm is used by the solver if iparm(5) = 1.
+		int *perm = 0;
+
+		// Number of right-hand sides that need to be solved for.
+		int nrhs = 0;
+
+		int msglvl = 0; // Debug output => 1
+
+		lu->_val = &mat.val[0];
+		lu->_rowPtr = &mat.rowPtr[0];
+		lu->_col = &mat.col[0];
+
+		pardiso(lu->_pardisoHandle,
+				&maxfct,
+				&mnum,
+				&lu->_mtype,
+				&phase,
+				&lu->_n,
+				const_cast<double *>(reinterpret_cast<const double *>(&mat.val[0])),
+				const_cast<int *>(&mat.rowPtr[0]),
+				const_cast<int *>(&mat.col[0]),
+				perm,
+				&nrhs,
+				lu->_iparm,
+				&msglvl,
+				0,
+				0,
+				&error,
+				lu->_dparm);
+
 		return lu;
 	}
 
-	LU::~LU() {		
+	LU::~LU() {
+		// Intel doc : Maximum number of factors with identical nonzero sparsity structure 
+		// that must be keep at the same time in memory. 
+		// In most applications this value is equal to 1.
+		int maxfct = 1;
+
+		// Intel doc: Indicates the actual matrix for the solution phase. 
+		// With this scalar you can define which matrix to factorize.
+		// In most applications this value is 1.
+		int mnum = 1;
+
+		int phase = -1; // Release all internal memory for all matrices
+
+		// Intel doc: Holds the permutation vector of size n. 
+		// You can use it to apply your own fill-in reducing ordering to the solver. 
+		// The permutation vector perm is used by the solver if iparm(5) = 1.
+		int *perm = 0;
+
+		// Number of right-hand sides that need to be solved for.
+		int nrhs = 0;
+
+		int msglvl = 0; // Debug output => 1
+
+		int error = 0;
+		pardiso(const_cast<void **>(_pardisoHandle),
+				&maxfct,
+				&mnum,
+				const_cast<int *>(&_mtype),
+				&phase, 
+				const_cast<int *>(&_n),
+				const_cast<double *>(reinterpret_cast<const double *>(_val)),
+				const_cast<int *>(_rowPtr),
+				const_cast<int *>(_col),
+				perm,
+				&nrhs,
+				const_cast<int *>(_iparm),
+				&msglvl,
+				0,
+				0,
+				&error,
+				_dparm);
 	}
 
-	void LU::solve(std::complex<double> *bx) const {		
+	void LU::solve(std::complex<double> *bx) const
+	{
+		// Intel doc : Maximum number of factors with identical nonzero sparsity structure 
+		// that must be keep at the same time in memory. 
+		// In most applications this value is equal to 1.
+		int maxfct = 1;
+
+		// Intel doc: Indicates the actual matrix for the solution phase. 
+		// With this scalar you can define which matrix to factorize.
+		// In most applications this value is 1.
+		int mnum = 1;
+
+		int phase = 33; // Solve
+
+		// Intel doc: Holds the permutation vector of size n. 
+		// You can use it to apply your own fill-in reducing ordering to the solver. 
+		// The permutation vector perm is used by the solver if iparm(5) = 1.
+		int *perm = 0;
+
+		// Number of right-hand sides that need to be solved for.
+		int nrhs = 1;
+
+		int msglvl = 0; // Debug output
+
+		int error = 0;
+
+		_iparm[5] = 1; // in-place
+
+		std::vector<std::complex<double> > x(_n);
+
+		pardiso(const_cast<void **>(_pardisoHandle),
+				&maxfct,
+				&mnum,
+				const_cast<int *>(&_mtype),
+				&phase, 
+				const_cast<int *>(&_n),
+				const_cast<double *>(reinterpret_cast<const double *>(_val)),
+				const_cast<int *>(_rowPtr),
+				const_cast<int *>(_col),
+				perm,
+				&nrhs,
+				_iparm,
+				&msglvl,
+				(double *)bx,
+				(double *)&x[0],
+				&error,
+				_dparm);
 	}
 
-	void LU::solve(const std::vector<std::complex<double> > &b, std::complex<double> *x) const {		
+	void LU::solve(const std::vector<std::complex<double> > &b, std::complex<double> *x) const {
+		// Intel doc : Maximum number of factors with identical nonzero sparsity structure 
+		// that must be keep at the same time in memory. 
+		// In most applications this value is equal to 1.
+		int maxfct = 1;
+
+		// Intel doc: Indicates the actual matrix for the solution phase. 
+		// With this scalar you can define which matrix to factorize.
+		// In most applications this value is 1.
+		int mnum = 1;
+
+		int phase = 33; // Solve
+
+		// Intel doc: Holds the permutation vector of size n. 
+		// You can use it to apply your own fill-in reducing ordering to the solver. 
+		// The permutation vector perm is used by the solver if iparm(5) = 1.
+		int *perm = 0;
+
+		// Number of right-hand sides that need to be solved for.
+		int nrhs = 1;
+
+		int msglvl = 0; // Debug output
+
+		int error = 0;
+
+		_iparm[5] = 0;
+
+		pardiso(const_cast<void **>(_pardisoHandle),
+				&maxfct,
+				&mnum,
+				const_cast<int *>(&_mtype),
+				&phase, 
+				const_cast<int *>(&_n),
+				const_cast<double *>(reinterpret_cast<const double *>(_val)),
+				const_cast<int *>(_rowPtr),
+				const_cast<int *>(_col),
+				perm,
+				&nrhs,
+				_iparm,
+				&msglvl,
+				(double *)&b[0],
+				(double *)x,
+				&error,
+				_dparm);
 	}
 }

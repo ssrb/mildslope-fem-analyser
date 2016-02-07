@@ -35,17 +35,20 @@ REDIR_1 :=
 REDIR = $(REDIR_$(V))
 
 CXX := g++
-CXXFLAGS := -Wall -Wextra -m64 -O3 $(shell mpic++ --showme:compile) \
+CXXFLAGS := -Wall -Wextra -m64 -ggdb3 $(shell mpic++ --showme:compile) \
 	-I/usr/local/cuda/include
 # -mkl=parallel
 
-LDFLAGS :=  $(shell mpic++ --showme:link) -lblas \
+LDFLAGS :=  $(shell mpic++ --showme:link) \
 	-L/usr/local/cuda/lib64 \
 	-L/usr/local/cuda/lib \
+	-L../third_party/pardiso \
 	-ldl -lnsl -lutil \
 	-lcudart \
-	-lcusparse 
-
+	-lcusparse \
+	-lpardiso500-GNU481-X86-64 \
+	-lblas -llapack -lgfortran -fopenmp -lpthread -lm
+	
 # -pthread -openmp -mkl=parallel \
 # -llmpe -lmpe
 # -lopen-rte -lopen-pal 

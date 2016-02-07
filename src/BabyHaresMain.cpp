@@ -128,7 +128,7 @@ int main(int ac, char **av) {
 	TiXmlElement* waveElement = rootElement->FirstChildElement( "wave" );	
 	wave.height = atof(waveElement->FirstChildElement( "height" )->FirstChild()->ToText()->Value());	
 	wave.length = atof(waveElement->FirstChildElement( "length" )->FirstChild()->ToText()->Value());
-	wave.direction = atof(av[2] /*waveElement->FirstChildElement( "direction" )->FirstChild()->ToText()->Value()*/) * M_PI / 180;
+	wave.direction = atof(waveElement->FirstChildElement( "direction" )->FirstChild()->ToText()->Value()) * M_PI / 180;
 	
 	std::vector<std::complex<double> > eta0(mesh->_vertices.size(), 0.0);
 	std::complex<double> *eta0Ptr = &(eta0[0]);
