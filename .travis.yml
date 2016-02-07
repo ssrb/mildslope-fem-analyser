@@ -1,6 +1,10 @@
-language: c
+language: cpp
+compiler:
+- gcc
 before_install:
+- wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_7.5-18_amd64.deb
+- sudo dpkg -i cuda-repo-ubuntu1404_7.5-18_amd64.deb
 - sudo apt-get -qq update
-- sudo apt-get install -y openmpi-bin libopenmpi-dev libblas-dev cuda-7-5 cuda-cublas-dev-7-5 cuda-cusparse-dev-7-5
+- sudo apt-get install -y openmpi-bin libopenmpi-dev libblas-dev cuda
 script:
 - make -C src
