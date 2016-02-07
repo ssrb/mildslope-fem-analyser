@@ -7,6 +7,6 @@ before_install:
 - wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_7.5-18_amd64.deb
 - sudo dpkg -i cuda-repo-ubuntu1404_7.5-18_amd64.deb
 - sudo apt-get -qq update
-- sudo apt-get install -y gfortran g77 openmpi-bin libopenmpi-dev libblas-dev liblapack-dev cuda-minimal-build-7-5 cuda-toolkit-7-5
+- sudo apt-get install -y gfortran openmpi-bin libopenmpi-dev libblas-dev liblapack-dev cuda-minimal-build-7-5 cuda-toolkit-7-5
 script:
 - make -C src
