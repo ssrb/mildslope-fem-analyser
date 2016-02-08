@@ -25,6 +25,7 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 #include "LU.h"
+#include <cstdlib>
 
 // Pardiso + vectorized math
 extern "C" {
@@ -71,6 +72,11 @@ namespace BabyHares {
 
 		pardisoinit(lu->_pardisoHandle, &lu->_mtype, &solver, lu->_iparm, lu->_dparm, &error);
 
+		lu->_iparm[2] = 1; // # processors : use OMP_NUM_THREADS
+		const char *omp_num_threads = getenv("OMP_NUM_THREADS");
+		if (omp_num_threads) {
+			lu->_iparm[2] = atoi(omp_num_threads);
+		}
 		//pardisoLU.iparm[26] = 1; // Check input
 		lu->_iparm[28] = 0; // Pardiso double precision
 

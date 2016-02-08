@@ -57,6 +57,17 @@ namespace BabyHares {
 			val.resize(iNnz, 0.0);
 		}
 
+		void indexOne() {
+			if (rowPtr[0] == 0) {
+				for (int i = 0; i < rowPtr[nrow]; ++i) {
+			        col[i] += 1;
+			    }
+				for (int i = 0; i <= nrow; ++i) {
+			        rowPtr[i] += 1;
+			    }
+			}
+		}
+
 		Type type;
 		int nrow, ncol;
 		std::vector<int> rowPtr, col;

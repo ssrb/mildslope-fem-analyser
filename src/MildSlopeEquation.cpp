@@ -270,7 +270,7 @@ MildSlopeSystemConstPtr  MildSlopeEquation::computeCoefficents(const Wave &wave,
 					if (row < nbInteriorVertices) {
 						// AII
 						if (column < nbInteriorVertices) {
-							if (row <= column) {
+							if (row <= column) {								
 								ls->AII.col[coeffAII++] = column;
 							}
 						// AIG
@@ -291,12 +291,16 @@ MildSlopeSystemConstPtr  MildSlopeEquation::computeCoefficents(const Wave &wave,
 		}
 
 		if (row < nbInteriorVertices) {
+			// 1 indexed for pardiso
 			CommitSparseMatrixRow(ls->AII, row, coeffAII, 0, coefficients);
 			CommitSparseMatrixRow(ls->AIG, row, coeffAIG, nbInteriorVertices, coefficients);
 		} else {
 			CommitSparseMatrixRow(ls->AGG, row - nbInteriorVertices, coeffAGG, nbInteriorVertices, coefficients);
 		}
 	}
+
+	// Pardiso using 1-indexed array
+	ls->AII.indexOne();
 
 	return ls;
 }
